@@ -8,7 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
- * @Target("CLASS")
+ * @Target("CLASS", "METHOD")
  * @Attributes({
  *     @Attribute("name", required = true, type = "string"),
  *     @Attribute("attributes", type = "array"),

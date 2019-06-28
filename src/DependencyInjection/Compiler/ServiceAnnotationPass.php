@@ -2,7 +2,9 @@
 
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -10,6 +12,11 @@ use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
 class ServiceAnnotationPass implements CompilerPassInterface
 {
+    /**
+     * @var Reader $annotationReader
+     */
+    private $annotationReader;
+
     /**
      * {@inheritdoc}
      */
@@ -19,8 +26,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
             return;
         }
 
-        /** @var CachedReader $annotationReader */
-        $annotationReader = $container->get('annotation_reader');
+        $this->annotationReader = $container->get('annotation_reader');
 
         $services = array_keys($container->findTaggedServiceIds('terminal42_service_annotation'));
 
@@ -35,14 +41,38 @@ class ServiceAnnotationPass implements CompilerPassInterface
                 continue;
             }
 
-            $annotations = $annotationReader->getClassAnnotations($reflection);
+            $this->parseClassAnnotations($reflection, $definition);
+            $this->parseMethodAnnotations($reflection, $definition);
+        }
+    }
+
+    private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition)
+    {
+        $annotations = $this->annotationReader->getClassAnnotations($reflection);
+
+        foreach ($annotations as $annotation) {
+            if (!$annotation instanceof ServiceTag) {
+                continue;
+            }
+
+            $definition->addTag($annotation->getName(), $annotation->getAttributes());
+        }
+    }
+
+    private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition)
+    {
+        foreach ($reflection->getMethods() as $method) {
+            $annotations = $this->annotationReader->getMethodAnnotations($method);
 
             foreach ($annotations as $annotation) {
                 if (!$annotation instanceof ServiceTag) {
                     continue;
                 }
 
-                $definition->addTag($annotation->getName(), $annotation->getAttributes());
+                $attributes = $annotation->getAttributes();
+                $attributes['method'] = $method->getName();
+
+                $definition->addTag($annotation->getName(), $attributes);
             }
         }
     }
