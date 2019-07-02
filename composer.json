@@ -1,6 +1,7 @@
 {
     "name": "terminal42/service-annotation-bundle",
     "type": "symfony-bundle",
+    "license": "MIT",
     "description": "Add service tags from class annotations",
     "require": {
         "php": "^7.1",
