@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * Password Validation Bundle for Contao Open Source CMS.
+ *
+ * @copyright  Copyright (c) 2019, terminal42 gmbh
+ * @author     terminal42 gmbh <https://terminal42.ch>
+ * @license    MIT
+ * @link       http://github.com/terminal42/service-annotation-bundle
+ */
+
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
@@ -11,14 +22,14 @@ use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTagInterface;
 class ServiceAnnotationPass implements CompilerPassInterface
 {
     /**
-     * @var Reader $annotationReader
+     * @var Reader
      */
     private $annotationReader;
 
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->has('annotation_reader')) {
             return;
@@ -28,7 +39,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
         $services = array_keys($container->findTaggedServiceIds('terminal42_service_annotation'));
 
-        /** @var Definition $definition */
+        /* @var Definition $definition */
         foreach ($services as $service) {
             $definition = $container->getDefinition($service);
             $definition->clearTag('terminal42_service_annotation');
@@ -44,7 +55,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
         }
     }
 
-    private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition)
+    private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         $annotations = $this->annotationReader->getClassAnnotations($reflection);
 
@@ -57,7 +68,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
         }
     }
 
-    private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition)
+    private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         foreach ($reflection->getMethods() as $method) {
             $annotations = $this->annotationReader->getMethodAnnotations($method);
