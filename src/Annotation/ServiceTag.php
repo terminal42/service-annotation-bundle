@@ -8,10 +8,9 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
- * @Target("CLASS", "METHOD")
+ * @Target({"CLASS", "METHOD"})
  * @Attributes({
- *     @Attribute("name", required = true, type = "string"),
- *     @Attribute("attributes", type = "array"),
+ *     @Attribute("value", required = true, type = "string"),
  * })
  */
 class ServiceTag
@@ -24,10 +23,13 @@ class ServiceTag
      */
     protected $attributes = [];
 
-    public function __construct(array $values)
+    public function __construct(array $data)
     {
-        $this->name = $values['name'] ?? null;
-        $this->attributes = $values['attributes'] ?? [];
+        $this->name = $data['value'];
+
+        unset($data['value']);
+
+        $this->attributes = $data;
     }
 
     public function getName(): string

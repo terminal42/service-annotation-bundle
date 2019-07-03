@@ -14,6 +14,9 @@ service definitions, but it works without it (e.g. for bundles) nonetheless.
 $ composer.phar require terminal42/service-annotation-bundle ^1.0
 ```
 
+Afterwards, make sure to enable the
+`Terminal42\ServiceAnnotation\Terminal42ServiceAnnotationBundle` in your
+kernel.
 
 ## Configuration
 
@@ -54,7 +57,7 @@ use Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
 /**
- * @ServiceTag(name="monolog.logger", attributes={"channel"="routing"})
+ * @ServiceTag("monolog.logger", channel="routing")
  */
 class KernelListener implements ServiceAnnotationInterface
 {
@@ -66,7 +69,7 @@ class KernelListener implements ServiceAnnotationInterface
     }
 
     /**
-     * @ServiceTag(name="kernel.event_listener", attributes={"event"="kernel.request"})
+     * @ServiceTag("kernel.event_listener", event="kernel.request")
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
@@ -140,21 +143,17 @@ class Logger extends ServiceTag
 {
     private $channel;
 
-    public function __construct(array $values)
+    public function __construct(array $data)
     {
-        parent::__construct($values);
+        parent::__construct([]);
 
         $this->name = 'monolog.logger';
-        $this->channel = $values['channel'];
+        $this->channel = $data['channel'];
     }
 
     public function getAttributes(): array
     {
-        $attributes = parent::getAttributes();
-
-        $attributes['channel'] = $this->channel;
-
-        return $attributes;
+        return ['channel' => $this->channel];
     }
 }
 ```
@@ -167,7 +166,6 @@ simplified like this:
 
 namespace App\EventListener;
 
-use Psr\Log\LoggerInterface;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface;
 
 /**
