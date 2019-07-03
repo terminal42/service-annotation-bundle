@@ -2,13 +2,11 @@
 
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
+use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTagInterface;
 
 class ServiceAnnotationPass implements CompilerPassInterface
 {
@@ -51,7 +49,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
         $annotations = $this->annotationReader->getClassAnnotations($reflection);
 
         foreach ($annotations as $annotation) {
-            if (!$annotation instanceof ServiceTag) {
+            if (!$annotation instanceof ServiceTagInterface) {
                 continue;
             }
 
@@ -65,7 +63,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
             $annotations = $this->annotationReader->getMethodAnnotations($method);
 
             foreach ($annotations as $annotation) {
-                if (!$annotation instanceof ServiceTag) {
+                if (!$annotation instanceof ServiceTagInterface) {
                     continue;
                 }
 

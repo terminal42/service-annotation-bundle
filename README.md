@@ -53,7 +53,7 @@ namespace App\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface;
+use Terminal42\ServiceAnnotationBundle\ServiceAnnotationInterface;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
 /**
@@ -130,25 +130,22 @@ annotations. Good IDEs like PhpStorm can then provide autocomplete support.
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
-use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
+use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTagInterface;
 
 /**
  * @Annotation
  * @Target("CLASS")
  * @Attributes({
- *     @Attribute("channel", required = true, type = "string"),
+ *     @Attribute("channel", type = "string", required = true),
  * })
  */
-class Logger extends ServiceTag
+class Logger implements ServiceTagInterface
 {
-    private $channel;
+    public $channel;
 
-    public function __construct(array $data)
+    public function getName(): string
     {
-        parent::__construct([]);
-
-        $this->name = 'monolog.logger';
-        $this->channel = $data['channel'];
+        return 'monolog.logger';
     }
 
     public function getAttributes(): array
@@ -166,7 +163,7 @@ simplified like this:
 
 namespace App\EventListener;
 
-use Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface;
+use Terminal42\ServiceAnnotationBundle\ServiceAnnotationInterface;
 
 /**
  * @Logger(channel="routing")

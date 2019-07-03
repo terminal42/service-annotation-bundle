@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("value", required = true, type = "string"),
  * })
  */
-class ServiceTag
+class ServiceTag implements ServiceTagInterface
 {
     /** @var string */
     protected $name;

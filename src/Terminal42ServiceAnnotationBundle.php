@@ -5,7 +5,6 @@ namespace Terminal42\ServiceAnnotationBundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface;
 use Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler\ServiceAnnotationPass;
 
 class Terminal42ServiceAnnotationBundle extends Bundle
