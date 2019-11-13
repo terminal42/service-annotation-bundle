@@ -39,7 +39,7 @@ autoconfiguration in your service definition.
 services:
     _defaults:
         autoconfigure: true
-        autowiring: true
+        autowire: true
 
     App\:
         resource: ../src/*
