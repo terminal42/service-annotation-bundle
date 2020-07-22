@@ -22,6 +22,9 @@ class Terminal42ServiceAnnotationBundle extends Bundle
     {
         parent::build($container);
 
+        // Priority must be higher than ResolveInstanceofConditionalsPass so annotations
+        // are added before autoconfiguration adds tags for interfaces etc.
+        // See Symfony\Component\DependencyInjection\Compiler\PassConfig
         $container->addCompilerPass(new ServiceAnnotationPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 110);
     }
 }

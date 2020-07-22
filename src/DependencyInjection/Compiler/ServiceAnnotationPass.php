@@ -38,6 +38,8 @@ class ServiceAnnotationPass implements CompilerPassInterface
         foreach ($container->getDefinitions() as $id => $definition) {
             $class = $definition->getClass();
 
+            // See Symfony\Component\DependencyInjection\Compiler\ResolveClassPass
+            // Needs to be done here because this compiler pass runs before ResolveClassPass
             if (null === $class && preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+(?:\\\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+)++$/', $id)) {
                 $class = $id;
             }
