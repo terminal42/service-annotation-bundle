@@ -35,16 +35,22 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
         $this->annotationReader = $container->get('annotation_reader');
 
-        $services = array_keys($container->findTaggedServiceIds('terminal42_service_annotation'));
+        foreach ($container->getDefinitions() as $id => $definition) {
+            $class = $definition->getClass();
 
-        /* @var Definition $definition */
-        foreach ($services as $service) {
-            $definition = $container->getDefinition($service);
-            $definition->clearTag('terminal42_service_annotation');
+            // See Symfony\Component\DependencyInjection\Compiler\ResolveClassPass
+            // Needs to be done here because this compiler pass runs before ResolveClassPass
+            if (null === $class && preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+(?:\\\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+)++$/', $id)) {
+                $class = $id;
+            }
 
-            $reflection = new \ReflectionClass($definition->getClass());
+            $class = $container->getParameterBag()->resolveValue($class);
 
-            if ($reflection->isAbstract()) {
+            if (
+                !$class
+                || null === ($reflection = $container->getReflectionClass($class, false))
+                || $reflection->isAbstract()
+            ) {
                 continue;
             }
 
