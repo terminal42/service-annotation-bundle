@@ -25,26 +25,19 @@ The bundle currently does not provide any service configuration.
 
 ## How to use
 
+Annotations can be used on any service which is registered in the container.
 
-### Using autowiring and autoconfiguration (for apps)
+The example annotations below equal to the following tags:
 
-If you're using this bundle in your app, you can enable autowiring and
-autoconfiguration in your service definition.
+```yaml
+service:
+    App\EventListener\KernelListener:
+        tags:
+            - { name: monolog.logger, channel: routing }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+```
 
 **Example:**
-
-```yml
-// config/services.yml
-
-services:
-    _defaults:
-        autoconfigure: true
-        autowire: true
-
-    App\:
-        resource: ../src/*
-
-```
 
 ```php
 // src/EventListener/KernelListener.php
@@ -53,13 +46,12 @@ namespace App\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Terminal42\ServiceAnnotationBundle\ServiceAnnotationInterface;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
 /**
  * @ServiceTag("monolog.logger", channel="routing")
  */
-class KernelListener implements ServiceAnnotationInterface
+class KernelListener
 {
     private $logger;
 
@@ -80,41 +72,6 @@ class KernelListener implements ServiceAnnotationInterface
 
 If an annotation is added to a method instead of the class, the method name
 is automatically added to the service tag "method" argument.
-
-
-### Without autowiring (for bundles)
-
-For bundles, it is not best practice to use autowiring. Autoconfig can
-still be used, so the only change is to manually set the arguments in
-your service definition. Everything else will work as shown in the example
-above.
-
-
-### Without autoconfig (everything manual)
-
-If you refrain from using autoconfig, you can still use this feature.
-Instead of using the marker interface
-`Terminal42\ServiceAnnotationBundle\Annotation\ServiceAnnotationInterface`,
-you need to add one tag to your service so they can be found in the container.
-It can then load an unlimited number of tags from annotations.
-
-**Example:**
-
-```yml
-// config/services.yml
-
-services:
-    _defaults:
-        autoconfigure: false
-        autowiring: false
-
-    foo_bar.listener.kernel:
-        class: Foo\BarBundle\EventListener\KernelListener
-        arguments:
-            - '@logger'
-        tags: ['terminal42_service_annotation']
-
-```
 
 
 ## Extending the annotations
@@ -163,12 +120,10 @@ simplified like this:
 
 namespace App\EventListener;
 
-use Terminal42\ServiceAnnotationBundle\ServiceAnnotationInterface;
-
 /**
  * @Logger(channel="routing")
  */
-class KernelListener implements ServiceAnnotationInterface
+class KernelListener
 {
     // Same class as before
 }
