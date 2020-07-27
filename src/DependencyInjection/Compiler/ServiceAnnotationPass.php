@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -61,7 +62,12 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
     private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
-        $annotations = $this->annotationReader->getClassAnnotations($reflection);
+        try {
+            $annotations = $this->annotationReader->getClassAnnotations($reflection);
+        } catch (AnnotationException $e) {
+            // Ignore this class if annotations can't be parsed.
+            return;
+        }
 
         foreach ($annotations as $annotation) {
             if (!$annotation instanceof ServiceTagInterface) {
@@ -75,7 +81,12 @@ class ServiceAnnotationPass implements CompilerPassInterface
     private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         foreach ($reflection->getMethods() as $method) {
-            $annotations = $this->annotationReader->getMethodAnnotations($method);
+            try {
+                $annotations = $this->annotationReader->getMethodAnnotations($method);
+            } catch (AnnotationException $e) {
+                // Ignore this method if annotations can't be parsed.
+                continue;
+            }
 
             foreach ($annotations as $annotation) {
                 if (!$annotation instanceof ServiceTagInterface) {
