@@ -37,6 +37,10 @@ class ServiceAnnotationPass implements CompilerPassInterface
         $this->annotationReader = $container->get('annotation_reader');
 
         foreach ($container->getDefinitions() as $id => $definition) {
+            if ($definition->isAbstract() || $definition->isSynthetic()) {
+                continue;
+            }
+
             $class = $definition->getClass();
 
             // See Symfony\Component\DependencyInjection\Compiler\ResolveClassPass
