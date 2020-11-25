@@ -24,7 +24,9 @@ use Doctrine\Common\Annotations\Annotation\Target;
  */
 class ServiceTag implements ServiceTagInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
