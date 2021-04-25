@@ -37,7 +37,7 @@ service:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 ```
 
-**Example:**
+**Example using annotations:**
 
 ```php
 // src/EventListener/KernelListener.php
@@ -63,6 +63,35 @@ class KernelListener
     /**
      * @ServiceTag("kernel.event_listener", event="kernel.request")
      */
+    public function onKernelRequest(GetResponseEvent $event)
+    {
+        $this->logger->debug('Request for '.$event->getRequest()->getRequestUri());
+    }
+}
+```
+
+**Example using attributes (>=PHP8.0):**
+
+```php
+// src/EventListener/KernelListener.php
+
+namespace App\EventListener;
+
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
+
+#[ServiceTag('monolog_logger', ['channel' => 'routing'])]
+class KernelListener
+{
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    #[ServiceTag('kernel.event_listener', ['event' => 'kernel.request'])]
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->logger->debug('Request for '.$event->getRequest()->getRequestUri());
