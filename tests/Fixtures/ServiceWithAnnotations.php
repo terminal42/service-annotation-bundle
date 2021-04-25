@@ -13,6 +13,7 @@ class ServiceWithAnnotations
 {
     /**
      * @ServiceTag("target_service", foo="foobar")
+     * @ServiceTag("target_service", bar="baz")
      */
     public function doSomething(): void
     {

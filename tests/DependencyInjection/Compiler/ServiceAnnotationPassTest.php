@@ -54,6 +54,7 @@ class ServiceAnnotationPassTest extends TestCase
             'test_service' => [
                 ['priority' => 123, 'bar' => 'baz'],
                 ['foo' => 'foobar', 'method' => 'doSomething'],
+                ['bar' => 'baz', 'method' => 'doSomething'],
             ],
         ]);
     }
@@ -81,6 +82,7 @@ class ServiceAnnotationPassTest extends TestCase
             'test_service' => [
                 ['priority' => 123, 'bar' => 'baz'],
                 ['foo' => 'foobar', 'method' => 'doSomething'],
+                ['bar' => 'baz', 'method' => 'doSomething'],
             ],
         ]);
     }
