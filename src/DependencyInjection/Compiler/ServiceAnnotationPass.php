@@ -15,13 +15,19 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTagInterface;
 
 class ServiceAnnotationPass implements CompilerPassInterface
 {
     /**
-     * @var Reader
+     * @var bool
+     */
+    private $supportsAttributes;
+
+    /**
+     * @var Reader|null
      */
     private $annotationReader;
 
@@ -30,11 +36,13 @@ class ServiceAnnotationPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has('annotation_reader')) {
+        $this->supportsAttributes = \PHP_VERSION_ID >= 80000;
+
+        if (!$container->has('annotation_reader') && !$this->supportsAttributes) {
             return;
         }
 
-        $this->annotationReader = $container->get('annotation_reader');
+        $this->annotationReader = $container->get('annotation_reader', ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->isSynthetic()) {
@@ -66,11 +74,20 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
     private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
-        try {
-            $annotations = $this->annotationReader->getClassAnnotations($reflection);
-        } catch (AnnotationException $e) {
-            // Ignore this class if annotations can't be parsed.
-            return;
+        $annotations = [];
+
+        if (null !== $this->annotationReader) {
+            try {
+                $annotations = $this->annotationReader->getClassAnnotations($reflection);
+            } catch (AnnotationException $e) {
+                // Ignore class annotations if they can't be parsed.
+            }
+        }
+
+        if ($this->supportsAttributes) {
+            foreach ($reflection->getAttributes() as $attribute) {
+                $annotations[] = $attribute->newInstance();
+            }
         }
 
         foreach ($annotations as $annotation) {
@@ -85,11 +102,20 @@ class ServiceAnnotationPass implements CompilerPassInterface
     private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         foreach ($reflection->getMethods() as $method) {
-            try {
-                $annotations = $this->annotationReader->getMethodAnnotations($method);
-            } catch (AnnotationException $e) {
-                // Ignore this method if annotations can't be parsed.
-                continue;
+            $annotations = [];
+
+            if (null !== $this->annotationReader) {
+                try {
+                    $annotations = $this->annotationReader->getMethodAnnotations($method);
+                } catch (AnnotationException $e) {
+                    // Ignore method annotations if they can't be parsed.
+                }
+            }
+
+            if ($this->supportsAttributes) {
+                foreach ($method->getAttributes() as $attribute) {
+                    $annotations[] = $attribute->newInstance();
+                }
             }
 
             foreach ($annotations as $annotation) {

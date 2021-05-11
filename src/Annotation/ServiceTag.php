@@ -22,6 +22,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("value", required = true, type = "string"),
  * })
  */
+#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class ServiceTag implements ServiceTagInterface
 {
     /**
@@ -34,13 +35,27 @@ class ServiceTag implements ServiceTagInterface
      */
     protected $attributes = [];
 
-    public function __construct(array $data)
+    /**
+     * @param string|array $serviceName
+     */
+    public function __construct($serviceName, ...$data)
     {
-        $this->name = $data['value'];
+        if (\is_array($serviceName) && 0 === \count($data)) {
+            // Instantiated by annotation reader
+            $data = $serviceName;
 
-        unset($data['value']);
+            $this->name = $data['value'];
+            unset($data['value']);
+        } else {
+            // Instantiated using attributes
+            if (!\is_string($serviceName)) {
+                throw new \InvalidArgumentException('Name must be a string.');
+            }
 
-        $this->attributes = $data;
+            $this->name = $serviceName;
+        }
+
+        $this->attributes = $data ?? [];
     }
 
     public function getName(): string
