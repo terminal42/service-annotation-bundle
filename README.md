@@ -81,7 +81,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
-#[ServiceTag('monolog_logger', ['channel' => 'routing'])]
+#[ServiceTag('monolog_logger', channel: 'routing')]
 class KernelListener
 {
     private $logger;
@@ -91,7 +91,7 @@ class KernelListener
         $this->logger = $logger;
     }
 
-    #[ServiceTag('kernel.event_listener', ['event' => 'kernel.request'])]
+    #[ServiceTag('kernel.event_listener', event: 'kernel.request')]
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->logger->debug('Request for '.$event->getRequest()->getRequestUri());

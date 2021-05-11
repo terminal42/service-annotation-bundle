@@ -36,23 +36,23 @@ class ServiceTag implements ServiceTagInterface
     protected $attributes = [];
 
     /**
-     * @param string|array $name
+     * @param string|array $serviceName
      */
-    public function __construct($name, array $data = null)
+    public function __construct($serviceName, ...$data)
     {
-        if (\is_array($name) && null === $data) {
+        if (\is_array($serviceName) && 0 === \count($data)) {
             // Instantiated by annotation reader
-            $data = $name;
+            $data = $serviceName;
 
             $this->name = $data['value'];
             unset($data['value']);
         } else {
             // Instantiated using attributes
-            if (!\is_string($name)) {
+            if (!\is_string($serviceName)) {
                 throw new \InvalidArgumentException('Name must be a string.');
             }
 
-            $this->name = $name;
+            $this->name = $serviceName;
         }
 
         $this->attributes = $data ?? [];
