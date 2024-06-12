@@ -17,7 +17,9 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
+ *
  * @Target({"CLASS", "METHOD"})
+ *
  * @Attributes({
  *     @Attribute("value", required = true, type = "string"),
  * })
