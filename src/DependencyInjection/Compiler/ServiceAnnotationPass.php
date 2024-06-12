@@ -25,9 +25,6 @@ class ServiceAnnotationPass implements CompilerPassInterface
      */
     private $annotationReader;
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (!$container->has('annotation_reader')) {
