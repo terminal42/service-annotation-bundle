@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @copyright  Copyright (c) 2020, terminal42 gmbh
- * @author     terminal42 gmbh <https://terminal42.ch>
- * @license    MIT
- * @link       http://github.com/terminal42/service-annotation-bundle
- */
-
 namespace Terminal42\ServiceAnnotationBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
@@ -32,10 +25,13 @@ class ServiceTag implements ServiceTagInterface
     protected $name;
 
     /**
-     * @var array
+     * @var array<string, string|int|float|bool>
      */
     protected $attributes = [];
 
+    /**
+     * @param array<string, string|int|float|bool> $data
+     */
     public function __construct(array $data)
     {
         $this->name = $data['value'];
@@ -50,6 +46,9 @@ class ServiceTag implements ServiceTagInterface
         return $this->name;
     }
 
+    /**
+     * @return array<string, string|int|float|bool>
+     */
     public function getAttributes(): array
     {
         return $this->attributes;

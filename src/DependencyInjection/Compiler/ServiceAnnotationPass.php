@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @copyright  Copyright (c) 2020, terminal42 gmbh
- * @author     terminal42 gmbh <https://terminal42.ch>
- * @license    MIT
- * @link       http://github.com/terminal42/service-annotation-bundle
- */
-
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationException;
@@ -16,6 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTagInterface;
 
@@ -28,7 +22,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        $this->annotationReader = $container->get('annotation_reader', ContainerBuilder::NULL_ON_INVALID_REFERENCE) ?? new AnnotationReader();
+        $this->annotationReader = $container->get('annotation_reader', ContainerInterface::NULL_ON_INVALID_REFERENCE) ?? new AnnotationReader();
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->isSynthetic()) {
@@ -58,6 +52,9 @@ class ServiceAnnotationPass implements CompilerPassInterface
         }
     }
 
+    /**
+     * @param \ReflectionClass<\stdClass> $reflection
+     */
     private function parseClassAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         try {
@@ -76,6 +73,9 @@ class ServiceAnnotationPass implements CompilerPassInterface
         }
     }
 
+    /**
+     * @param \ReflectionClass<\stdClass> $reflection
+     */
     private function parseMethodAnnotations(\ReflectionClass $reflection, Definition $definition): void
     {
         foreach ($reflection->getMethods() as $method) {
