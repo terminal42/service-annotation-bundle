@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Terminal42\ServiceAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationException;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,11 +28,7 @@ class ServiceAnnotationPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has('annotation_reader')) {
-            return;
-        }
-
-        $this->annotationReader = $container->get('annotation_reader');
+        $this->annotationReader = $container->get('annotation_reader', ContainerBuilder::NULL_ON_INVALID_REFERENCE) ?? new AnnotationReader();
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->isSynthetic()) {
