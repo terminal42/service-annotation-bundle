@@ -9,7 +9,7 @@ interface ServiceTagInterface
     public function getName(): string;
 
     /**
-     * @return array<string, string|int|float|bool>
+     * @return array<string, mixed>
      */
     public function getAttributes(): array;
 }

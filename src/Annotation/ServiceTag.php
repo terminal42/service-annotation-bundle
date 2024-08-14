@@ -25,7 +25,7 @@ class ServiceTag implements ServiceTagInterface
     protected $name;
 
     /**
-     * @var array<string, string|int|float|bool>
+     * @var array<string, mixed>
      */
     protected $attributes = [];
 
@@ -47,7 +47,7 @@ class ServiceTag implements ServiceTagInterface
     }
 
     /**
-     * @return array<string, string|int|float|bool>
+     * @return array<string, mixed>
      */
     public function getAttributes(): array
     {
