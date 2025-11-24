@@ -37,7 +37,13 @@ class ServiceAnnotationPass implements CompilerPassInterface
                 $class = $id;
             }
 
-            $class = $container->getParameterBag()->resolveValue($class);
+            try {
+                $class = $container->getParameterBag()->resolveValue($class);
+            } catch (\Throwable $exception) {
+                // This is not processable - potentially problem with other bundles that register services with parameters as class name.
+                // The parameter might not be available yet, as we are registered with priority 110.
+                continue;
+            }
 
             if (
                 !$class
